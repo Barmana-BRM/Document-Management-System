@@ -1,40 +1,126 @@
-# Freeware Document Management System
- allows businesses to control the production, storage, management and distribution of electronic documents, yielding greater effectiveness and the ability to reuse information and to control the flow of the documents.
+# Blockchain Document Management System
 
- integrates all essential documents management, collaboration and an advanced search functionality into one easy to use solution. The system also includes administration tools to define the roles of various users, access control, user quota, level of document security, detailed logs of activity and automations setup.
+Simple document management system with Hyperledger Fabric blockchain using Hyperledger Composer API, IPFS, MongoDB, Express.js, GraphQL, React.js and Material-UI
 
- builds a highly valuable repository of corporate information assets to facilitate  creation and improve business decision making, boosting workgroups and enterprise productivity through shared practices, greater, better customer relations, faster sales cycles, improved product time-to-market, and better-informed decision making.
+[![Watch the video](https://img.youtube.com/vi/-0jr5HwS16g/maxresdefault.jpg)](https://youtu.be/-0jr5HwS16g)
 
-With  Freeware Community Edition you can:
-* Collect information from any digital source.
-* Collaborate with colleagues on documents and projects.
-* Empower organizations to capitalize on accumulated knowledge by locating documents, experts, and information sources.
-* Embedded workflow engine to take control of your business case.
-* Automate tasks.
+## Prerequisite
 
-## License Change Starting from Version 7.0
+- Operating Systems: Ubuntu Linux 14.04 / 16.04 LTS (both 64-bit), or Mac OS 10.12
+- [Docker](https://www.docker.com/) (version 17.03 or higher)
+- [npm](https://www.npmjs.com/)  (v5.x)
+- [Node](https://nodejs.org/en/) (version 8.9 or higher - note version 9 is not supported!)
+  * to install specific Node version you can use [nvm](https://github.com/creationix/nvm). Example:
+    + `nvm install 8.12.0`
+    + `nvm use v8.12.0`
+- [Hyperledger Composer](https://hyperledger.github.io/composer/installing/development-tools.html)
+  * to install composer cli
+    `npm install -g composer-cli@0.20`
+  * to install composer-rest-server
+    `npm install -g composer-rest-server@0.20`
+  * to install generator-hyperledger-composer
+    `npm install -g generator-hyperledger-composer@0.20`
+- [IPFS](https://ipfs.io/)  (v0.4.17 or higher)
+- [MongoDB](https://www.mongodb.com/)
+  * for example you can use cloud hosted MongoDB by [mlab.com](https://mlab.com)
 
-Starting with version 7.0, Community Edition changes its licensing model. This version will no longer include source code and will be distributed in binary format only, free of charge.
+## Steps
+### 1. Clone the repository
 
-### Why this change?
+Clone the `Blockchain Document Managemen System` repo locally. In a terminal, run:
+```
+git clone https://github.com/nparfen/Blockchain-Document-Management-System.git
+```
 
- has been an active project for over 15 years, with a dedicated team focused on development, maintenance, and support. During this time, we have witnessed a recurring and growing problem: third parties taking the source code of the Community Edition, redistributing it as their own product, or using it as the foundation for commercial services without any contribution to the project or respect for the work of those who make it possible.
+### 2. Deploy the network
 
-This kind of use is not only ethically questionable, but it also threatens the long-term viability of the project. A software project of this scale requires real resources: time, infrastructure, specialized knowledge, and dedicated people. Without a sustainable model, there is no project.
+Start Docker. The fabric setup scripts will be in the `/fabric` directory. Start fabric and create peer admin card:
+```
+cd fabric/
+./downloadFabric.sh
+./startFabric.sh
+./createPeerAdminCard.sh
+```
 
-### What changes exactly?
+Now, we are ready to deploy the business network to Hyperledger Fabric. This requires the Hyperledger Composer chaincode to be installed on the peer,then the business network archive (.bna) must be sent to the peer, and a new participant, identity, and associated card must be created to be the network administrator. Finally, the network administrator business network card must be imported for use, and the network can then be pinged to check it is responding.
 
-Starting with version 7.0,  CE will be distributed as a free binary without access to the source code. The application will remain freely downloadable and usable at no cost for individuals, companies, and organizations using it to manage their own documentation.
+* Generate a business network archive in the `root` of the project:
+```
+cd ../
+composer archive create -t dir -n .
+```
 
-### What does NOT change?
+* Install the business network:
+```
+composer network install --card PeerAdmin@hlfv1 --archiveFile nykredit-network@0.0.1.bna
+```
 
-Versions prior to 7.0 retain their original license and their source code will remain available in this repository. Nothing changes for those already working with those versions.
+* Start the business network:
+```
+composer network start --networkName nykredit-network --networkVersion 0.0.1 --networkAdmin admin --networkAdminEnrollSecret adminpw --card PeerAdmin@hlfv1 --file networkadmin.card
+```
 
-### A note to our community
+* Import the network administrator identity as a usable business network card:
+```
+composer card import --file networkadmin.card
+```
 
-We are aware that this change may spark debate, and we understand that. The open source philosophy holds enormous value, and we ourselves are both beneficiaries and advocates of that ecosystem. However, open source does not mean an absence of boundaries when it comes to those who act in bad faith.
+* Check that the business network has been deployed successfully, run the following command to ping the network:
+```
+composer network ping --card admin@nykredit-network
+```
 
-We are taking this step to protect the project and ensure that  continues to evolve, improve, and remain available to everyone for many years to come. If you value  and want to support its development, please consider the Professional Edition, which offers advanced features and official support.
+If the command returns successfully, your setup is complete.
 
-Thank you for being part of this journey.
+### 3. Run IPFS
 
+```
+ipfs init
+ipfs daemon
+```
+
+### 4. Run Application
+
+Go into the `api` folder and install the dependency:
+```
+cd api/
+npm install
+```
+
+Connect your mongodb instance to save data about transactions for filtering, searching and paginating. Create `.env` file in the `api` folder and fill it with yours values. Also put down JWT secret for JWT token and enter preffered port for the server.
+```
+APP_PORT=
+JWT_SECRET=
+DB_USERNAME=
+DB_PASSWORD=
+DB_HOST=
+DB_PORT=
+DB_NAME=
+```
+
+Then run the server:
+```
+npm start
+```
+
+If evetything is okay you will see two links of the server (basic and for websockets).
+
+Go to the `client` folder and install the dependency:
+```
+cd client/
+npm install
+```
+
+In the `client` folder create `.env` file and put that server links.
+```
+REACT_APP_API=
+REACT_APP_WEBSOCKET=
+```
+
+Then start the web application:
+```
+npm start
+```
+
+The application should now be running at:
+`http://localhost:3000`
