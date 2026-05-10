@@ -2,7 +2,7 @@
 
 Simple document management system with Hyperledger Fabric blockchain using Hyperledger Composer API, IPFS, MongoDB, Express.js, GraphQL, React.js and Material-UI
 
-[![Watch the video](https://img.youtube.com/vi/-0jr5HwS16g/maxresdefault.jpg)](https://youtu.be/-0jr5HwS16g)
+
 
 ## Prerequisite
 
