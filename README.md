@@ -1,126 +1,186 @@
-# Blockchain Document Management System
+<div align="center">
 
-Simple document management system with Hyperledger Fabric blockchain using Hyperledger Composer API, IPFS, MongoDB, Express.js, GraphQL, React.js and Material-UI
+# 🚀 OpenKM Document Management System 6.3.13
 
-[![Watch the video](https://img.youtube.com/vi/-0jr5HwS16g/maxresdefault.jpg)](https://youtu.be/-0jr5HwS16g)
+**An enterprise document-management codebase providing repositories, search, workflows, permissions, audit logs and automation.**
 
-## Prerequisite
+<img alt="Languages" src="https://img.shields.io/badge/docs-English_·_فارسی_·_العربية-2563eb?style=for-the-badge">
+<img alt="Architecture" src="https://img.shields.io/badge/architecture-Mermaid-7c3aed?style=for-the-badge">
+<img alt="Organization" src="https://img.shields.io/badge/org-Barmana--BRM-0f172a?style=for-the-badge">
 
-- Operating Systems: Ubuntu Linux 14.04 / 16.04 LTS (both 64-bit), or Mac OS 10.12
-- [Docker](https://www.docker.com/) (version 17.03 or higher)
-- [npm](https://www.npmjs.com/)  (v5.x)
-- [Node](https://nodejs.org/en/) (version 8.9 or higher - note version 9 is not supported!)
-  * to install specific Node version you can use [nvm](https://github.com/creationix/nvm). Example:
-    + `nvm install 8.12.0`
-    + `nvm use v8.12.0`
-- [Hyperledger Composer](https://hyperledger.github.io/composer/installing/development-tools.html)
-  * to install composer cli
-    `npm install -g composer-cli@0.20`
-  * to install composer-rest-server
-    `npm install -g composer-rest-server@0.20`
-  * to install generator-hyperledger-composer
-    `npm install -g generator-hyperledger-composer@0.20`
-- [IPFS](https://ipfs.io/)  (v0.4.17 or higher)
-- [MongoDB](https://www.mongodb.com/)
-  * for example you can use cloud hosted MongoDB by [mlab.com](https://mlab.com)
+[English](#english) · [فارسی](#فارسی) · [العربية](#العربية) · [Build Guide](./BUILD.md)
 
-## Steps
-### 1. Clone the repository
+</div>
 
-Clone the `Blockchain Document Managemen System` repo locally. In a terminal, run:
-```
-git clone https://github.com/nparfen/Blockchain-Document-Management-System.git
+> [!IMPORTANT]
+> **Verified repository status:** Upstream OpenKM source snapshot; legacy Java stack
+
+## 🧭 Architecture
+
+```mermaid
+flowchart LR
+  U[Browser/WebDAV/API] --> W[Tomcat + WAR]
+W --> G[GWT/Spring]
+G --> H[Hibernate/workflow]
+H --> DB[(Database)]
+G --> IDX[(Lucene)]
+G --> FS[(Documents)]
 ```
 
-### 2. Deploy the network
+---
 
-Start Docker. The fabric setup scripts will be in the `/fabric` directory. Start fabric and create peer admin card:
-```
-cd fabric/
-./downloadFabric.sh
-./startFabric.sh
-./createPeerAdminCard.sh
-```
+## English
 
-Now, we are ready to deploy the business network to Hyperledger Fabric. This requires the Hyperledger Composer chaincode to be installed on the peer,then the business network archive (.bna) must be sent to the peer, and a new participant, identity, and associated card must be created to be the network administrator. Finally, the network administrator business network card must be imported for use, and the network can then be pinged to check it is responding.
+### 📌 Overview
 
-* Generate a business network archive in the `root` of the project:
-```
-cd ../
-composer archive create -t dir -n .
-```
+An enterprise document-management codebase providing repositories, search, workflows, permissions, audit logs and automation.
 
-* Install the business network:
-```
-composer network install --card PeerAdmin@hlfv1 --archiveFile nykredit-network@0.0.1.bna
-```
+This README is based on the current public source, dependency manifests, container files and runnable entry points. Implemented functionality is separated from roadmap claims, and known limitations are recorded instead of being hidden behind generic setup instructions.
 
-* Start the business network:
-```
-composer network start --networkName nykredit-network --networkVersion 0.0.1 --networkAdmin admin --networkAdminEnrollSecret adminpw --card PeerAdmin@hlfv1 --file networkadmin.card
-```
+### ✨ Core capabilities
 
-* Import the network administrator identity as a usable business network card:
-```
-composer card import --file networkadmin.card
-```
+- Document repository and metadata
+- Role-based permissions
+- Full-text search
+- Workflow and automation
 
-* Check that the business network has been deployed successfully, run the following command to ping the network:
-```
-composer network ping --card admin@nykredit-network
-```
+### 🧱 Technology stack
 
-If the command returns successfully, your setup is complete.
+| Layer | Technology |
+|---|---|
+| Packaging | Maven WAR |
+| Runtime | Java 8, Tomcat |
+| Web | GWT 2.8.2, Spring 3.2.18 |
+| Data/Search | Hibernate 3.6, Lucene |
+| Version | OpenKM 6.3.13 |
 
-### 3. Run IPFS
+### 🔄 Operating model
 
-```
-ipfs init
-ipfs daemon
-```
+1. Prepare the runtime and external services documented in [BUILD.md](./BUILD.md).
+2. Configure secrets in local environment files or a secret manager; never commit them.
+3. Start infrastructure and backend services before the user interface in multi-service projects.
+4. Validate health checks, migrations, model files and provider connectivity.
+5. Run tests and domain-specific validation before producing a release artifact.
 
-### 4. Run Application
+### 🔐 Security, quality and limitations
 
-Go into the `api` folder and install the dependency:
-```
-cd api/
-npm install
-```
+- Legacy dependencies require isolation/security review
+- Later OpenKM versions have different licensing
 
-Connect your mongodb instance to save data about transactions for filtering, searching and paginating. Create `.env` file in the `api` folder and fill it with yours values. Also put down JWT secret for JWT token and enter preffered port for the server.
-```
-APP_PORT=
-JWT_SECRET=
-DB_USERNAME=
-DB_PASSWORD=
-DB_HOST=
-DB_PORT=
-DB_NAME=
-```
+### 🛠 Build and deployment
 
-Then run the server:
-```
-npm start
-```
+Use **[BUILD.md](./BUILD.md)** for verified prerequisites, development commands, production build steps, tests and troubleshooting.
 
-If evetything is okay you will see two links of the server (basic and for websockets).
+### 📄 Attribution and license
 
-Go to the `client` folder and install the dependency:
-```
-cd client/
-npm install
-```
+This is OpenKM upstream code. Preserve OpenKM copyright, license/EULA, trademarks and contributor attribution.
 
-In the `client` folder create `.env` file and put that server links.
-```
-REACT_APP_API=
-REACT_APP_WEBSOCKET=
-```
+---
 
-Then start the web application:
-```
-npm start
-```
+## فارسی
 
-The application should now be running at:
-`http://localhost:3000`
+### 📌 معرفی پروژه
+
+کدبیس مدیریت اسناد سازمانی با مخزن، جست‌وجو، گردش کار، مجوز، لاگ و خودکارسازی.
+
+این مستند بر اساس سورس عمومی فعلی، فایل‌های وابستگی، تنظیمات کانتینر و نقاط ورود قابل مشاهده تهیه شده است. قابلیت‌های پیاده‌سازی‌شده از موارد نقشه راه جدا شده‌اند و محدودیت‌های واقعی Build به‌صورت شفاف ثبت شده‌اند.
+
+### ✨ قابلیت‌های اصلی
+
+- مخزن سند و فراداده
+- مجوز نقش‌محور
+- جست‌وجوی تمام‌متن
+- گردش کار و خودکارسازی
+
+### 🧱 پشته فناوری
+
+| Layer | Technology |
+|---|---|
+| Packaging | Maven WAR |
+| Runtime | Java 8, Tomcat |
+| Web | GWT 2.8.2, Spring 3.2.18 |
+| Data/Search | Hibernate 3.6, Lucene |
+| Version | OpenKM 6.3.13 |
+
+### 🔄 روند اجرا
+
+۱. پیش‌نیازها و سرویس‌های بیرونی مندرج در [BUILD.md](./BUILD.md) را آماده کنید.  
+۲. کلیدها را فقط در فایل محیطی خارج از Git یا Secret Manager نگه دارید.  
+۳. در پروژه چندسرویسی، ابتدا دیتابیس، صف و بک‌اند و سپس رابط کاربری را اجرا کنید.  
+۴. Health Check، Migration، فایل مدل و اتصال Providerها را بررسی کنید.  
+۵. پیش از انتشار، تست فنی و اعتبارسنجی تخصصی حوزه را انجام دهید.
+
+### 🔐 امنیت و محدودیت
+
+- نسخه Runtime و Dependencyها را با Lockfile تثبیت کنید.
+- اطلاعات شخصی، فایل آپلودی، کلید API و داده واقعی نباید وارد مخزن عمومی شود.
+- ادعاهای دقت، امنیت یا آمادگی Production باید در محیط هدف دوباره ارزیابی شوند.
+- محدودیت‌های اختصاصی پروژه در بخش انگلیسی بالا و `BUILD.md` ثبت شده‌اند.
+
+### 🛠 نصب و Build
+
+راهنمای کامل و دستورات قابل کپی در **[BUILD.md](./BUILD.md)** قرار دارد.
+
+### 📄 مجوز و مالکیت
+
+فایل `LICENSE`، اعتبار توسعه‌دهندگان اصلی و مجوز کتابخانه‌های ثالث باید حفظ شود. در پروژه‌های upstream یا fork، مالکیت به سازمان بارمانا منتقل نمی‌شود.
+
+---
+
+## العربية
+
+### 📌 نظرة عامة
+
+قاعدة نظام إدارة مستندات مؤسسي تشمل المستودع والبحث وسير العمل والصلاحيات والتدقيق.
+
+أُعد هذا التوثيق اعتماداً على المصدر العام الحالي وملفات التبعيات والحاويات ونقاط التشغيل المتاحة. وهو يميز بين الوظائف المنفذة وخارطة الطريق ويذكر قيود البناء الفعلية بوضوح.
+
+### ✨ القدرات الأساسية
+
+- مستودع وبيانات وصفية
+- صلاحيات حسب الدور
+- بحث نصي كامل
+- سير عمل وأتمتة
+
+### 🧱 التقنيات
+
+| Layer | Technology |
+|---|---|
+| Packaging | Maven WAR |
+| Runtime | Java 8, Tomcat |
+| Web | GWT 2.8.2, Spring 3.2.18 |
+| Data/Search | Hibernate 3.6, Lucene |
+| Version | OpenKM 6.3.13 |
+
+### 🔄 مسار التشغيل
+
+١. جهز المتطلبات والخدمات الخارجية الواردة في [BUILD.md](./BUILD.md).  
+٢. احتفظ بالأسرار في ملف بيئة غير متتبع أو مدير أسرار.  
+٣. شغّل قواعد البيانات والطوابير والخلفية قبل الواجهة في الأنظمة متعددة الخدمات.  
+٤. تحقق من الصحة والترحيلات وملفات النماذج واتصال المزوّدين.  
+٥. نفذ الاختبارات والتحقق المتخصص قبل إصدار نسخة للنشر.
+
+### 🔐 الأمان والقيود
+
+- ثبّت إصدارات التشغيل والتبعيات بملفات القفل.
+- لا تضع بيانات شخصية أو ملفات مرفوعة أو مفاتيح API في مستودع عام.
+- أعد التحقق من ادعاءات الدقة والأمان والجاهزية في بيئة الهدف.
+- القيود الخاصة بالمشروع موثقة في القسم الإنجليزي و`BUILD.md`.
+
+### 🛠 البناء والنشر
+
+توجد التعليمات الكاملة والأوامر القابلة للنسخ في **[BUILD.md](./BUILD.md)**.
+
+### 📄 النسب والترخيص
+
+يجب الحفاظ على `LICENSE` وحقوق المطورين الأصليين وتراخيص المكونات الخارجية. وجود نسخة أو fork لا ينقل ملكية المصدر إلى Barmana-BRM.
+
+
+
+---
+
+<div align="center">
+
+Made documentation-ready for the public portfolio of **Barmana-BRM**
+
+</div>
